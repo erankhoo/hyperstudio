@@ -1,0 +1,79 @@
+{
+  "name": "hyperstudio",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/hyperstudio/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/hyperstudio",
+        "index": "apps/hyperstudio/src/index.html",
+        "baseHref": "/",
+        "main": "apps/hyperstudio/src/main.tsx",
+        "tsConfig": "apps/hyperstudio/tsconfig.app.json",
+        "assets": [
+          "apps/hyperstudio/src/favicon.ico",
+          "apps/hyperstudio/src/assets"
+        ],
+        "styles": ["apps/hyperstudio/src/styles.scss"],
+        "scripts": [],
+        "webpackConfig": "apps/hyperstudio/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/hyperstudio/src/environments/environment.ts",
+              "with": "apps/hyperstudio/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hyperstudio:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "hyperstudio:build:development"
+        },
+        "production": {
+          "buildTarget": "hyperstudio:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/hyperstudio/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
