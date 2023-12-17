@@ -1,0 +1,165 @@
+{
+  "name": "hyperstudio-shell",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/hyperstudio-shell/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/hyperstudio-shell/browser",
+        "index": "apps/hyperstudio-shell/src/index.html",
+        "baseHref": "/",
+        "main": "apps/hyperstudio-shell/src/main.ts",
+        "tsConfig": "apps/hyperstudio-shell/tsconfig.app.json",
+        "assets": [
+          "apps/hyperstudio-shell/src/favicon.ico",
+          "apps/hyperstudio-shell/src/assets"
+        ],
+        "scripts": [],
+        "webpackConfig": "apps/hyperstudio-shell/webpack.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "extractCss": true,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/hyperstudio-shell/src/environments/environment.ts",
+              "with": "apps/hyperstudio-shell/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "webpackConfig": "apps/hyperstudio-shell/webpack.config.prod.ts"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/react:module-federation-ssr-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "browserTarget": "hyperstudio-shell:build:development",
+        "serverTarget": "hyperstudio-shell:serve-server:development",
+        "port": 4200,
+        "browserTargetOptions": {
+          "watch": true
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "browserTarget": "hyperstudio-shell:build:production",
+          "serverTarget": "hyperstudio-shell:serve-server:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/hyperstudio-shell/jest.config.ts"
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "hyperstudio-shell:build",
+        "watch": false,
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "hyperstudio-shell:build:development"
+        },
+        "production": {
+          "buildTarget": "hyperstudio-shell:build:production"
+        }
+      }
+    },
+    "server": {
+      "dependsOn": ["build"],
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "main": "apps/hyperstudio-shell/server.ts",
+        "outputPath": "dist/apps/hyperstudio-shell/server",
+        "outputFileName": "server.js",
+        "tsConfig": "apps/hyperstudio-shell/tsconfig.server.json",
+        "compiler": "babel",
+        "externalDependencies": "all",
+        "outputHashing": "none",
+        "webpackConfig": "apps/hyperstudio-shell/webpack.server.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/hyperstudio-shell/src/environments/environment.ts",
+              "with": "apps/hyperstudio-shell/src/environments/environment.prod.ts"
+            }
+          ],
+          "sourceMap": false
+        }
+      }
+    },
+    "serve-browser": {
+      "executor": "@nx/react:module-federation-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hyperstudio-shell:build",
+        "hmr": true,
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "hyperstudio-shell:build:development"
+        },
+        "production": {
+          "buildTarget": "hyperstudio-shell:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "serve-server": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hyperstudio-shell:server:development",
+        "buildTargetOptions": {
+          "watch": true
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "buildTarget": "hyperstudio-shell:server:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}

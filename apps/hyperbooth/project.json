@@ -1,0 +1,160 @@
+{
+  "name": "hyperbooth",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/hyperbooth/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/hyperbooth/browser",
+        "index": "apps/hyperbooth/src/index.html",
+        "baseHref": "/",
+        "main": "apps/hyperbooth/src/main.ts",
+        "tsConfig": "apps/hyperbooth/tsconfig.app.json",
+        "assets": [
+          "apps/hyperbooth/src/favicon.ico",
+          "apps/hyperbooth/src/assets"
+        ],
+        "scripts": [],
+        "webpackConfig": "apps/hyperbooth/webpack.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "extractCss": true,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/hyperbooth/src/environments/environment.ts",
+              "with": "apps/hyperbooth/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "extractCss": true,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "webpackConfig": "apps/hyperbooth/webpack.config.prod.ts"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:ssr-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "browserTarget": "hyperbooth:build:development",
+        "serverTarget": "hyperbooth:serve-server:development",
+        "port": 4201,
+        "browserTargetOptions": {
+          "watch": true
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "browserTarget": "hyperbooth:build:production",
+          "serverTarget": "hyperbooth:serve-server:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/hyperbooth/jest.config.ts"
+      }
+    },
+    "serve-static": {
+      "dependsOn": ["build", "server"],
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "PORT=4201 node dist/apps/hyperbooth/server/server.js"
+      }
+    },
+    "server": {
+      "dependsOn": ["build"],
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "main": "apps/hyperbooth/server.ts",
+        "outputPath": "dist/apps/hyperbooth/server",
+        "extractCss": true,
+        "outputFileName": "server.js",
+        "tsConfig": "apps/hyperbooth/tsconfig.server.json",
+        "styles": ["apps/hyperbooth/src/styles.scss"],
+        "compiler": "babel",
+        "externalDependencies": "all",
+        "outputHashing": "none",
+        "webpackConfig": "apps/hyperbooth/webpack.server.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/hyperbooth/src/environments/environment.ts",
+              "with": "apps/hyperbooth/src/environments/environment.prod.ts"
+            }
+          ],
+          "extractCss": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve-browser": {
+      "executor": "@nx/react:module-federation-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hyperbooth:build",
+        "hmr": true,
+        "port": 4201
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "hyperbooth:build:development"
+        },
+        "production": {
+          "buildTarget": "hyperbooth:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "serve-server": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hyperbooth:server:development",
+        "buildTargetOptions": {
+          "watch": true
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "buildTarget": "hyperbooth:server:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
